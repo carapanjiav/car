@@ -13,7 +13,7 @@ const int holes = 8;
 const float wheel_radius = 32;
 const float gear_ratio = 1;
 
-int main(void)
+int main(void) //asd
 {
     uart_init();
     io_redirect();
