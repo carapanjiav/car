@@ -10,12 +10,16 @@
 
 // 1: printf goes to the Nextion display
 // 0: printf goes to the serial monitor
-#define USE_NEXTION   0
-#define NEX_LINES     3      // number of text boxes
+#define USE_NEXTION   1
+#define NEX_LINES     3
 
 // Sets the text of one display component by name:
 //     nex_text("t0", "Hello world);
 void nex_text(const char *obj, const char *fmt, ...);
+void nex_cmd(const char *fmt, ...);
+void nex_val(const char *obj, int value);
+
+int nex_event(uint8_t *id, uint8_t *value);
 
 #define t0_text(...)  nex_text("t0", __VA_ARGS__)
 #define t1_text(...)  nex_text("t1", __VA_ARGS__)

@@ -4,10 +4,13 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdint.h>
 #include <stdio.h>
 #include "usart.h"
 #include "speed.h"
 #include "encoder.h"
+
+#define EV_START_BUTTON  0xA1
 
 const int holes = 8;
 const float wheel_radius = 32;
@@ -20,31 +23,48 @@ int main(void)
 
     float rpm = 0;
     float speed = 0;
+    uint8_t event_id;
+    uint8_t event_value;
+    uint8_t running = 1;
+    uint16_t update_interval_ms = 500;
+    uint16_t elapsed_ms = 0;
 
     while (1) {
-        float time = time_between_slots() / 1000.0f;
+        while (nex_event(&event_id, &event_value)) {
+            switch (event_id) {
+                case EV_START_BUTTON:
+                    running = !running;
+                    break;
 
-        int result = calculate_speed(
-            holes,
-            wheel_radius,
-            time,
-            gear_ratio,
-            &rpm,
-            &speed
-        );
+                default:
+                    break;
+            }
+        }
 
-        if (result == 0) {
-            t0_text("Time: %.2f s", time);
-            t1_text("RPM: %.2f", rpm);
-            t2_text("Speed: %.2f mm/s", speed);
+        if (running && elapsed_ms == 0U) {
+            float time = time_between_slots() / 1000.0f;
+            int result = calculate_speed(
+                holes,
+                wheel_radius,
+                time,
+                gear_ratio,
+                &rpm,
+                &speed
+            );
+
+            if (result == 0) {
+                t0_text("Time: %.2f s", time);
+                t1_text("RPM: %.2f", rpm);
+                t2_text("Speed: %.2f mm/s", speed);
+            } else {
+                t0_text("Waiting for encoder...");
+                t1_text("RPM: --");
+                t2_text("Speed: --");
+            }
         }
-        else {
-            t0_text("Error calculating wheel speed.");
-            t1_text("");
-            t2_text("");
-        }
-        _delay_ms(1000);
+
+        _delay_ms(10);
+        elapsed_ms += 10U;
+        if (elapsed_ms >= update_interval_ms) elapsed_ms = 0U;
     }
-
-    return 0;
 }
