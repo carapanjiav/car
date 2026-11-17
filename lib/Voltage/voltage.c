@@ -17,7 +17,7 @@ float voltage()
         ADCSRB = 0b00000000; // Configuring the free running mode p.220
         ADCSRA = 0b11100111; //Enabling ADC, auto-trigger, prescaler(division) 128 p.2
         while (!(ADCSRA & (1 << ADIF)));
-            adc_started = 1;
+        adc_started = 1;
     }
     
     unsigned int adc_value = read_adc();

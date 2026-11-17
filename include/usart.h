@@ -14,7 +14,7 @@
 #define NEX_LINES     3
 
 // Sets the text of one display component by name:
-//     nex_text("t0", "Hello world);
+//     nex_text("t0", "Hello world");
 void nex_text(const char *obj, const char *fmt, ...);
 void nex_cmd(const char *fmt, ...);
 void nex_val(const char *obj, int value);

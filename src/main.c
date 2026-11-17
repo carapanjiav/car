@@ -9,6 +9,7 @@
 #include "usart.h"
 #include "speed.h"
 #include "encoder.h"
+#include "voltage.h"
 
 #define EV_START_BUTTON  0xA1
 
@@ -25,7 +26,7 @@ int main(void)
     float speed = 0;
     uint8_t event_id;
     uint8_t event_value;
-    uint8_t running = 1;
+    uint8_t running = 0;
     uint16_t update_interval_ms = 500;
     uint16_t elapsed_ms = 0;
 
@@ -34,6 +35,10 @@ int main(void)
             switch (event_id) {
                 case EV_START_BUTTON:
                     running = !running;
+
+                    if(running){nex_cmd("page0.b0.txt=\"Stop\"");} 
+                    else {nex_cmd("page0.b0.txt=\"Start\"");}
+
                     break;
 
                 default:
@@ -53,14 +58,16 @@ int main(void)
             );
 
             if (result == 0) {
-                t0_text("Time: %.2f s", time);
-                t1_text("RPM: %.2f", rpm);
-                t2_text("Speed: %.2f mm/s", speed);
+                nex_cmd("pageSpeed.t0.txt=\"Time: %.2f\"", time);
+                nex_cmd("pageSpeed.t1.txt=\"RPM: %.2f\"", rpm);
+                nex_cmd("pageSpeed.t2.txt=\"Speed: %.2f mm/s\"", speed);
             } else {
-                t0_text("Waiting for encoder...");
-                t1_text("RPM: --");
-                t2_text("Speed: --");
+                nex_cmd("pageSpeed.t0.txt=\"Waiting for encoder...\"");
+                nex_cmd("pageSpeed.t1.txt=\"RPM: --\"");
+                nex_cmd("pageSpeed.t2.txt=\"Speed: --\"");
             }
+
+                nex_cmd("pageInfo.t0.txt=\"Voltage: %.2f V\"", voltage);            
         }
 
         _delay_ms(10);

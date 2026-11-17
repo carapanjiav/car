@@ -18,7 +18,7 @@ int calculate_speed(
         rpm == NULL ||
         speed == NULL) {
         return -1;
-}
+    }
 
     float encoder_rpm = 60.0f / (slots * time_between_slots);
 
